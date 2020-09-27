@@ -49,3 +49,51 @@ Singleton ensure a class has only one instance and provide a global point of acc
 4.	Caching
 5.	Data Sharing
 6.	Application Configuration Management
+
+Example:
+
+```
+namespace SingletonDesignPatternMVC5_Demo.Loggers
+{
+    public interface ILogger
+    {
+        void LogException(string message);
+    }
+}
+```
+
+```
+namespace SingletonDesignPatternMVC5_Demo.Loggers
+{
+    public class Logger : ILogger
+    {
+        private Logger()
+        {
+
+        }
+        private static readonly Lazy<Logger> instance = new Lazy<Logger>(() => new Logger());
+
+        public static Logger GetInstance
+        {
+            get
+            {
+                return instance.Value;
+            }
+        }
+        public void LogException(string message)
+        {
+            string fileName = string.Format("{0}_{1}.log", "Exception", DateTime.Now.ToShortDateString());
+            string logFilePath = string.Format(@"{0}\{1}", AppDomain.CurrentDomain.BaseDirectory, fileName);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("----------------------------------------");
+            sb.AppendLine(DateTime.Now.ToString());
+            sb.AppendLine(message);
+            using (StreamWriter writer = new StreamWriter(logFilePath, true))
+            {
+                writer.Write(sb.ToString());
+                writer.Flush();
+            }
+        }
+    }
+}
+```
